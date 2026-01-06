@@ -13,8 +13,9 @@ except ImportError:
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
     
-    supabase_url: str = Field(..., env="SUPABASE_URL", description="Supabase project URL")
-    supabase_key: str = Field(..., env="SUPABASE_KEY", description="Supabase anon/service key")
+    # Supabase Configuration (required)
+    SUPABASE_URL: str = Field(..., env="SUPABASE_URL", description="Supabase project URL")
+    SUPABASE_KEY: str = Field(..., env="SUPABASE_KEY", description="Supabase anon/service key")
     
     # Optional settings with defaults
     supabase_storage_bucket: str = Field(
@@ -45,9 +46,9 @@ class Settings(BaseSettings):
         """Pydantic config."""
         env_file = ".env"
         env_file_encoding = "utf-8"
-        case_sensitive = False
+        case_sensitive = True  # Keep case sensitive for field names
+        extra = "ignore"
 
 
 # Global settings instance
 settings: Settings = Settings()
-

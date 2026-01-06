@@ -1,7 +1,7 @@
 """Pydantic models for request/response schemas."""
 from datetime import datetime
 from typing import Optional, Dict, Any
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class ScanCreate(BaseModel):
@@ -10,14 +10,15 @@ class ScanCreate(BaseModel):
     patient_name: str = Field(..., min_length=1, max_length=255, description="Patient's full name")
     age: int = Field(..., ge=0, le=150, description="Patient's age")
     
-    @validator('patient_name')
+    @field_validator('patient_name')
+    @classmethod
     def validate_patient_name(cls, v: str) -> str:
         """Validate and sanitize patient name."""
         return v.strip()
     
     class Config:
         """Pydantic config."""
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "patient_name": "John Doe",
                 "age": 45
@@ -37,8 +38,8 @@ class ScanResponse(BaseModel):
     
     class Config:
         """Pydantic config."""
-        orm_mode = True
-        schema_extra = {
+        from_attributes = True
+        json_schema_extra = {
             "example": {
                 "id": 1,
                 "patient_name": "John Doe",
@@ -62,11 +63,10 @@ class PatientData(BaseModel):
     
     class Config:
         """Pydantic config."""
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "patient_name": "John Doe",
                 "age": 45
             }
         }
-
 

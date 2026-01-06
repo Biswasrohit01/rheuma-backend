@@ -1,32 +1,30 @@
 """Supabase database client initialization."""
-from typing import Optional
-from supabase import create_async_client, AsyncClient
+from supabase import create_client, Client
 from app.core.config import settings
+import sys
 
+# Initialize the client globally ONCE
+try:
+    _db_client: Client = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
+except Exception as e:
+    error_msg = str(e)
+    if "getaddrinfo failed" in error_msg or "11001" in error_msg:
+        print("\n" + "="*60)
+        print("ERROR: Cannot connect to Supabase!")
+        print("="*60)
+        print(f"URL: {settings.SUPABASE_URL}")
+        print("\nPossible issues:")
+        print("1. Check your internet connection")
+        print("2. Verify Supabase URL is correct")
+        print("3. Check if project exists: https://supabase.com/dashboard")
+        print("4. Check firewall/proxy settings")
+        print("5. Try: ping supabase.co")
+        print("="*60 + "\n")
+    raise
 
-class Database:
-    """Database client singleton."""
-    
-    _client: Optional[AsyncClient] = None
-    
-    @classmethod
-    def get_client(cls) -> AsyncClient:
-        """Get or create Supabase async client instance."""
-        if cls._client is None:
-            cls._client = create_async_client(
-                settings.supabase_url,
-                settings.supabase_key
-            )
-        return cls._client
-    
-    @classmethod
-    def reset_client(cls) -> None:
-        """Reset client instance (useful for testing)."""
-        cls._client = None
-
-
-# Convenience function to get database client
-def get_db() -> AsyncClient:
-    """Get Supabase async database client."""
-    return Database.get_client()
-
+def get_db() -> Client:
+    """
+    Returns the Supabase client.
+    This is NOT async, to prevent 'coroutine' errors.
+    """
+    return _db_client
