@@ -4,3 +4,4 @@ supabase
 python-multipart
 python-dotenv
 pydantic
+pydantic-settings
