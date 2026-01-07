@@ -29,7 +29,7 @@ class ScanCreate(BaseModel):
 class ScanResponse(BaseModel):
     """Schema for scan response."""
     
-    id: int = Field(..., description="Scan ID")
+    id: str = Field(..., description="Scan ID")
     patient_name: str = Field(..., description="Patient's full name")
     age: int = Field(..., description="Patient's age")
     image_url: str = Field(..., description="Public URL of the uploaded scan image")
